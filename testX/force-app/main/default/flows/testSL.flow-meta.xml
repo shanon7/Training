@@ -23,28 +23,80 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <recordUpdates>
-        <name>test</name>
-        <label>test</label>
+    <recordCreates>
+        <name>create_contact</name>
+        <label>create contact</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <inputReference>account_to_contact</inputReference>
+    </recordCreates>
+    <recordLookups>
+        <name>get</name>
+        <label>get</label>
         <locationX>176</locationX>
         <locationY>323</locationY>
-        <inputAssignments>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>account_to_contact</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
             <field>Name</field>
+            <operator>Contains</operator>
             <value>
-                <stringValue>test</stringValue>
+                <stringValue>United</stringValue>
             </value>
-        </inputAssignments>
-        <inputReference>$Record</inputReference>
-    </recordUpdates>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>test</targetReference>
+            <targetReference>get</targetReference>
         </connector>
         <object>Account</object>
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <transforms>
+        <name>account_to_contact</name>
+        <label>account to contact</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>create_contact</targetReference>
+        </connector>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <objectType>Contact</objectType>
+        <scale>0</scale>
+        <transformValues>
+            <transformValueActions>
+                <outputFieldApiName>AccountId</outputFieldApiName>
+                <transformType>Map</transformType>
+                <value>
+                    <elementReference>get[$EachItem].Id</elementReference>
+                </value>
+            </transformValueActions>
+            <transformValueActions>
+                <outputFieldApiName>OtherCity</outputFieldApiName>
+                <transformType>Map</transformType>
+                <value>
+                    <elementReference>get[$EachItem].ShippingCity</elementReference>
+                </value>
+            </transformValueActions>
+            <transformValueActions>
+                <outputFieldApiName>LastName</outputFieldApiName>
+                <transformType>Map</transformType>
+                <value>
+                    <formulaDataType>String</formulaDataType>
+                    <formulaExpression>Text({!get[$EachItem].Industry}) &amp; &quot; Clone&quot;</formulaExpression>
+                </value>
+            </transformValueActions>
+        </transformValues>
+    </transforms>
 </Flow>
